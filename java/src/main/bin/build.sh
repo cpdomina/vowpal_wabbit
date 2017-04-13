@@ -6,60 +6,28 @@
 __not_darwin=1
 __brew_not_installed=2
 
-make_base="cd /vowpal_wabbit;
-make clean;
-make vw java;"
+make_base="
+wget https://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.gz;
+tar -xzvf boost_1_61_0.tar.gz
+cd boost_1_61_0;
+sh bootstrap.sh;
+./bjam cxxflags=-fPIC cflags=-fPIC -a link=static --with-program_options install;
+cd /vowpal_wabbit;
+make clean vw java;"
 
 ubuntu_base="apt-get update -qq;
-apt-get install -qq software-properties-common g++ make libboost-program-options-dev zlib1g-dev default-jdk;"
+apt-get install -qq software-properties-common g++ make zlib1g-dev default-jdk wget;"
 
-ubuntu_12="$ubuntu_base
-export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64;
+ubuntu_16="$ubuntu_base
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;
 $make_base
-mv java/target/vw_jni.lib java/target/vw_jni.Ubuntu.12.amd64.lib"
+mv java/target/vw_jni.lib java/target/vw_jni.linux.amd64.lib"
 
-ubuntu_14_32="$ubuntu_base
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386;
+ubuntu_16_32="$ubuntu_base
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-i386;
 $make_base
-mv java/target/vw_jni.lib java/target/vw_jni.Ubuntu.14.i386.lib"
+mv java/target/vw_jni.lib java/target/vw_jni.linux.i386.lib"
 
-ubuntu_14="$ubuntu_base
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64;
-$make_base
-mv java/target/vw_jni.lib java/target/vw_jni.Ubuntu.14.amd64.lib"
-
-early_red_hat="yum update -q -y;
-yum install -q -y wget which zlib-devel java-1.7.0-openjdk-devel perl redhat-lsb-core;
-cd /etc/yum.repos.d;
-wget http://people.centos.org/tru/devtools-2/devtools-2.repo;
-yum clean all;
-yum install -q -y devtoolset-2-gcc devtoolset-2-gcc-c++ devtoolset-2-binutils;
-ln -s /opt/rh/devtoolset-2/root/usr/bin/* /usr/local/bin/;
-export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk.x86_64;
-cd /vowpal_wabbit;
-cat Makefile | sed 's/-fPIC/-fpermissive -fPIC/g' > Makefile.permissive;"
-
-red_hat_5="$early_red_hat
-yum install -q -y make epel-release;
-yum install -q -y boost141-devel;
-make clean;
-cat Makefile.permissive | sed 's/BOOST_LIBRARY\s*=\(.*\)/BOOST_LIBRARY =\1 -L \/usr\/lib64\/boost141/g' | sed 's/BOOST_INCLUDE\s*=\(.*\)/BOOST_INCLUDE =\1 -I \/usr\/include\/boost141/g' > Makefile.permissive.boost141;
-make -f Makefile.permissive.boost141 vw java;
-rm -f Makefile.permissive.boost141 Makefile.permissive;
-mv java/target/vw_jni.lib java/target/vw_jni.Red_Hat.5.amd64.lib"
-
-red_hat_6="$early_red_hat
-yum install -q -y boost-devel;
-make clean;
-make -f Makefile.permissive vw java;
-rm -f Makefile.permissive;
-mv java/target/vw_jni.lib java/target/vw_jni.Red_Hat.6.amd64.lib"
-
-red_hat_7="yum update -q -y;
-yum install -q -y gcc-c++ make boost-devel zlib-devel java-1.7.0-openjdk-devel perl clang redhat-lsb-core;
-export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk;
-$make_base
-mv java/target/vw_jni.lib java/target/vw_jni.Red_Hat.7.amd64.lib"
 
 # =============================================================================
 #  Function Definitions:
@@ -152,20 +120,10 @@ eval "$(docker-machine env default)"
 set -e
 set -u
 set -x
-run_docker "ubuntu:12.04" "$ubuntu_12"
-run_docker "32bit/ubuntu:14.04" "$ubuntu_14_32"
-run_docker "ubuntu:14.04" "$ubuntu_14"
 
-# This is VERY IMPORTANT for CentOS 5.  CentOS 5 ships with a Boost version that is too old to be used with VW.  As a result
-# users who wish to run on CentOS 5 MUST upgrade their boost to version 1.41.  That should ideally be done with the following
-# two commands:
-# sudo yum install epel-release
-# sudo yum install boost141-devel
-run_docker "centos:5" "$red_hat_5"
-
-run_docker "centos:6" "$red_hat_6"
-run_docker "centos:7" "$red_hat_7"
+run_docker "32bit/ubuntu:16.04" "$ubuntu_16_32"
+run_docker "ubuntu:16.04" "$ubuntu_16"
 
 make clean
 make vw java
-mv java/target/vw_jni.lib java/target/vw_jni.$(uname -s).$(uname -m).lib
+mv java/target/vw_jni.lib java/target/vw_jni.darwin.x86_64.lib

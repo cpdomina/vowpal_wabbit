@@ -85,7 +85,7 @@ final public class VWLearners {
             STATIC_LOCK.lock();
             try {
                 if (!loadedNativeLibrary) {
-                    NativeUtils.loadOSDependentLibrary("/vw_jni", ".lib");
+                    NativeUtils.loadOSDependentLibrary();
                     loadedNativeLibrary = true;
                 }
             }

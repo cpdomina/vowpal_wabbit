@@ -17,7 +17,7 @@ ifeq ($(CXX),)
 endif
 
 UNAME := $(shell uname)
-LIBS = -l boost_program_options -l pthread -l z
+LIBS = -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -l pthread -l z
 BOOST_INCLUDE = -I /usr/include
 BOOST_LIBRARY = -L /usr/local/lib -L /usr/lib
 NPROCS := 1
@@ -37,7 +37,7 @@ ifeq "CYGWIN" "$(findstring CYGWIN,$(UNAME))"
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
 endif
 ifeq ($(UNAME), Darwin)
-  LIBS = -lboost_program_options-mt -lboost_serialization-mt -l pthread -l z
+  LIBS = /usr/local/lib/libboost_program_options-mt.a /usr/local/lib/libboost_serialization-mt.a -l pthread -l z
   # On Macs, the location isn't always clear
   #	brew uses /usr/local
   #	but /opt/local seems to be preferred by some users

@@ -17,7 +17,7 @@ ifeq ($(CXX),)
 endif
 
 UNAME := $(shell uname)
-LIBS = -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -l pthread -l z
+LIBS = -Wl,-Bstatic -lboost_program_options -l z -Wl,-Bdynamic -l pthread
 BOOST_INCLUDE = -I /usr/include
 BOOST_LIBRARY = -L /usr/local/lib -L /usr/lib
 NPROCS := 1

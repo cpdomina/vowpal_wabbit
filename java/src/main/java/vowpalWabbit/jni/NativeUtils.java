@@ -37,16 +37,17 @@ public class NativeUtils {
 
 			// if not possible, try to use a previously compiled version
 			final String osName = System.getProperty("os.name");
+			final String osArch = System.getProperty("os.arch");
 
 			if (osName.toLowerCase().contains("mac")) {
 				loadLibraryFromJar("/vw_jni.darwin.x86_64.lib");
 			}
-			else if (osName.toLowerCase().contains("linux")) {
-				loadLibraryFromJar("/vw_jni.linux." + System.getProperty("os.arch") + ".lib");
+			else if (osName.toLowerCase().contains("linux") && osArch.equals("amd64")) {
+				loadLibraryFromJar("/vw_jni.linux.amd64.lib");
 			}
 			else {
-				throw new RuntimeException("Unable to load vw_jni library for " + osName + "." +
-				                           "This distribution contains pre-compiled versions of the library for Linux/Mac (32/64)." +
+				throw new RuntimeException("Unable to load vw_jni library for " + osName + " (" + osArch + ") ." +
+				                           "This distribution contains pre-compiled versions of the library for Linux and Mac (64 bits)." +
 				                           "You need to compile Vowpal Wabbit manually and add the library to the classpath.");
 			}
 		}

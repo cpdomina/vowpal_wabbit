@@ -8,25 +8,35 @@ __brew_not_installed=2
 
 make_base="
 wget https://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.gz;
-tar -xzvf boost_1_61_0.tar.gz
+tar -xzf boost_1_61_0.tar.gz
 cd boost_1_61_0;
-sh bootstrap.sh;
-./bjam cxxflags=-fPIC cflags=-fPIC -a link=static --with-program_options install;
+./bootstrap.sh;
+./bjam toolset=gcc cxxflags=-fPIC cflags=-fPIC -a link=static --with-program_options install;
+
+wget http://zlib.net/zlib-1.2.11.tar.gz;
+tar -xzf zlib-1.2.11.tar.gz;
+cd zlib-1.2.11;
+CFLAGS='-fPIC -O3' ./configure;
+make install;
+
 cd /vowpal_wabbit;
 make clean vw java;"
 
-ubuntu_base="apt-get update -qq;
-apt-get install -qq software-properties-common g++ make zlib1g-dev default-jdk wget;"
+ubuntu_base="
+apt-get update -qq;
+apt-get install -qq software-properties-common g++-4.6 make default-jdk wget;
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 20;
+update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 20;
+update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 30;
+update-alternatives --set cc /usr/bin/gcc;
+update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30;
+update-alternatives --set c++ /usr/bin/g++;
+"
 
-ubuntu_16="$ubuntu_base
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64;
+ubuntu_14="$ubuntu_base
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64;
 $make_base
 mv java/target/vw_jni.lib java/target/vw_jni.linux.amd64.lib"
-
-ubuntu_16_32="$ubuntu_base
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-i386;
-$make_base
-mv java/target/vw_jni.lib java/target/vw_jni.linux.i386.lib"
 
 
 # =============================================================================
@@ -121,8 +131,7 @@ set -e
 set -u
 set -x
 
-run_docker "32bit/ubuntu:16.04" "$ubuntu_16_32"
-run_docker "ubuntu:16.04" "$ubuntu_16"
+run_docker "ubuntu:14.04" "$ubuntu_14"
 
 make clean
 make vw java

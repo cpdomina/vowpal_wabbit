@@ -36,7 +36,7 @@ update-alternatives --set c++ /usr/bin/g++;
 ubuntu_14="$ubuntu_base
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64;
 $make_base
-mv java/target/vw_jni.lib java/target/vw_jni.linux.amd64.lib"
+mv java/target/libvw_jni.so java/target/vw_jni.linux.amd64.lib"
 
 
 # =============================================================================
@@ -135,4 +135,4 @@ run_docker "ubuntu:14.04" "$ubuntu_14"
 
 make clean
 make vw java
-mv java/target/vw_jni.lib java/target/vw_jni.darwin.x86_64.lib
+mv java/target/libvw_jni.dylib java/target/vw_jni.darwin.x86_64.lib

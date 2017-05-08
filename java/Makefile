@@ -1,8 +1,3 @@
-ifeq ($(JAVA_HOME),)
-  $(warning No JAVA_HOME found, JNI building will fail.  Please set JAVA_HOME when using JNI)
-  exit 1
-endif
-
 VWLIBS := -L../vowpalwabbit -l vw
 STDLIBS = $(BOOST_LIBRARY) $(LIBS)
 JAVA_INCLUDE = -I $(JAVA_HOME)/include
@@ -59,7 +54,7 @@ $(LOCAL_LIBRARY): $(jni_OBJS) ../vowpalwabbit/main.o ../vowpalwabbit/libvw.a ../
 	-include $(jni_SRCS:.cc=.o)
 
 install: $(LOCAL_LIBRARY)
-  cp $(LOCAL_LIBRARY) $(INSTALL_PATH);
+	cp $(LOCAL_LIBRARY) $(INSTALL_PATH);
 
 .PHONY: clean
 clean:

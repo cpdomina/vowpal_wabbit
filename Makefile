@@ -120,6 +120,9 @@ python: vw
 java: vw
 	cd java; $(MAKE) things
 
+java_install: vw
+	cd java; $(MAKE) install
+
 .FORCE:
 
 test: .FORCE vw library_example

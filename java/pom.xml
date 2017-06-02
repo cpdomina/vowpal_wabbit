@@ -4,7 +4,7 @@
 
     <groupId>com.github.johnlangford</groupId>
     <artifactId>vw-jni</artifactId>
-    <version>8.3.3-SNAPSHOT</version>
+    <version>8.3.3-STARDOG-4</version>
     <packaging>jar</packaging>
     <name>Vowpal Wabbit JNI Layer</name>
     <description>

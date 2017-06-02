@@ -26,6 +26,39 @@ JNIEXPORT void JNICALL Java_vowpalWabbit_learner_VWLearners_closeInstance(JNIEnv
   }
 }
 
+JNIEXPORT jfloat JNICALL Java_vowpalWabbit_learner_VWLearners_exampleNumber(JNIEnv *env, jclass obj, jlong vwPtr)
+{ try
+  { vw* vwInstance = (vw*)vwPtr;
+    return (vwInstance->sd->weighted_holdout_examples > 0) ? vwInstance->sd->weighted_holdout_examples : vwInstance->sd->weighted_examples;
+  }
+  catch(...)
+  { rethrow_cpp_exception_as_java_exception(env);
+  }
+}
+
+JNIEXPORT jfloat JNICALL Java_vowpalWabbit_learner_VWLearners_sumLoss(JNIEnv *env, jclass obj, jlong vwPtr)
+{ try
+  { vw* vwInstance = (vw*)vwPtr;
+    return (vwInstance->sd->weighted_holdout_examples > 0) ? vwInstance->sd->holdout_sum_loss : vwInstance->sd->sum_loss;
+  }
+  catch(...)
+  { rethrow_cpp_exception_as_java_exception(env);
+  }
+}
+
+JNIEXPORT void JNICALL Java_vowpalWabbit_learner_VWLearners_saveModel(JNIEnv *env, jclass obj, jlong vwPtr, jstring filename)
+{ try
+  { const char* utf_string = env->GetStringUTFChars(filename, NULL);
+    std::string filenameCpp(utf_string);
+    env->ReleaseStringUTFChars(filename, utf_string);
+    env->DeleteLocalRef(filename);
+    VW::save_predictor(*(vw*)vwPtr, filenameCpp);
+  }
+  catch(...)
+  { rethrow_cpp_exception_as_java_exception(env);
+  }
+}
+
 JNIEXPORT jobject JNICALL Java_vowpalWabbit_learner_VWLearners_getReturnType(JNIEnv *env, jclass obj, jlong vwPtr)
 { jclass clVWReturnType = env->FindClass(RETURN_TYPE);
   jfieldID field;

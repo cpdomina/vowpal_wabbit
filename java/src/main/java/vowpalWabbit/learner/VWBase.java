@@ -1,6 +1,7 @@
 package vowpalWabbit.learner;
 
 import java.io.Closeable;
+import java.io.File;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -61,6 +62,41 @@ abstract class VWBase implements Closeable {
 
     final boolean isOpen() {
         return isOpen;
+    }
+
+    /**
+     * Returns the (weighted) number of examples used to calculate {@link #sumLoss()}.
+     * By default, it's the total number of examples used during training.
+     * If using holdout, it's the number of examples in the holdout set.
+     */
+    public float exampleNumber() {
+        return VWLearners.exampleNumber(nativePointer);
+    }
+
+    /**
+     * Returns the (weighted) sum of the loss function during training.
+     * By default, it's the progressive validation loss of all training examples.
+     * If using holdout, it's the validation loss on the houldout set.
+     */
+    public float sumLoss() {
+        return VWLearners.sumLoss(nativePointer);
+    }
+
+    /**
+     * Save model to the filesystem
+     */
+    public void saveModel(File filename) {
+        lock.lock();
+        try {
+            if (isOpen()) {
+                VWLearners.saveModel(nativePointer, filename.getAbsolutePath());
+            } else {
+                throw new IllegalStateException("Already closed.");
+            }
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     @Override

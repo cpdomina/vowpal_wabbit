@@ -89,10 +89,9 @@ final public class VWLearners {
                     loadedNativeLibrary = true;
                 }
             }
-            catch (IOException e) {
-                // Here I've chosen to rethrow the exception as an unchecked exception because if the native
-                // library cannot be loaded then the exception is not recoverable from.
-                throw new RuntimeException(e);
+            catch (Throwable e) {
+                // unable to load library, send users to documentation
+                throw new RuntimeException("Unable to load analytics native library. Please refer to http://www.stardog.com/docs/#_native_library_errors", e);
             }
             finally {
                 STATIC_LOCK.unlock();

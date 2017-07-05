@@ -46,9 +46,7 @@ public class NativeUtils {
 				loadLibraryFromJar("/vw_jni.linux.amd64.lib");
 			}
 			else {
-				throw new RuntimeException("Unable to load vw_jni library for " + osName + " (" + osArch + ") ." +
-				                           "This distribution contains pre-compiled versions of the library for Linux and Mac (64 bits)." +
-				                           "You need to compile Vowpal Wabbit manually and add the library to the classpath.");
+				throw new RuntimeException("Unable to load vw_jni library for " + osName + " (" + osArch + ")");
 			}
 		}
 	}

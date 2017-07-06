@@ -20,7 +20,7 @@ CFLAGS='-fPIC -O3' ./configure;
 make install;
 
 cd /vowpal_wabbit;
-make clean vw java;"
+make -f Makefile_static clean vw java;"
 
 ubuntu_base="
 apt-get update -qq;
@@ -134,5 +134,5 @@ set -x
 run_docker "ubuntu:14.04" "$ubuntu_14"
 
 make clean
-make vw java
+make -f Makefile_static vw java
 mv java/target/libvw_jni.dylib java/target/vw_jni.darwin.x86_64.lib
